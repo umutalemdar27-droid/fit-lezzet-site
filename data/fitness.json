@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "baslik": "Tam Vücut Antrenmanı",
+      "aciklama": "Ekipmansız · Başlangıç seviyesi",
+      "sure": "1:00",
+      "emoji": "🏋️",
+      "video_url": ""
+    },
+    {
+      "baslik": "Sabah Esneme Rutini",
+      "aciklama": "5 hareket · Tüm seviyeler",
+      "sure": "1:00",
+      "emoji": "🤸",
+      "video_url": ""
+    },
+    {
+      "baslik": "Ofiste Yapılabilir Hareketler",
+      "aciklama": "Masabaşı · Sandalyeyle",
+      "sure": "1:00",
+      "emoji": "🔥",
+      "video_url": ""
+    }
+  ]
+}

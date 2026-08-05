@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "baslik": "Protein Salatası",
+      "aciklama": "Yüksek protein · 4 malzeme",
+      "sure": "1:00",
+      "emoji": "🥗"
+    },
+    {
+      "baslik": "Diyet Tavuk Wrap",
+      "aciklama": "Düşük kalori · Pratik",
+      "sure": "1:00",
+      "emoji": "🍱"
+    },
+    {
+      "baslik": "Antrenman Öncesi Smoothie",
+      "aciklama": "Enerji verici · 3 malzeme",
+      "sure": "1:00",
+      "emoji": "🥤"
+    }
+  ]
+}

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fit & Lezzet — Hakkımda</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D1210;
+    --turuncu: #c44a1a;
+    --yesil: #0aa35a;
+    --pembe: #be146e;
+    --mor: #7c3ab2;
+    --neon-yesil: #0f9d58;
+    --neon-mavi: #087e95;
+  }
+ 
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg); color:#F3F0E6; font-family:'Nunito',sans-serif; overflow-x:hidden; }
+  section[id], div[id] { scroll-margin-top:90px; }
+ 
+ 
+  /* CANVAS */
+  #particle-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+ 
+  @keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  @keyframes counterSpin{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+  @keyframes floatBadge{0%,100%{transform:translateY(0px)}50%{transform:translateY(-8px)}}
+  @keyframes tagPulse{0%,100%{box-shadow:0 0 15px rgba(15,157,88,0.1)}50%{box-shadow:0 0 30px rgba(15,157,88,0.3)}}
+ 
+  @media(prefers-reduced-motion:reduce){
+    *{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}
+    #particle-canvas{display:none}
+  }
+ 
+  /* NAV */
+  nav{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 4rem;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,18,16,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(10,163,90,0.1)}
+  .logo{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:-1px}
+  .logo-link{text-decoration:none;cursor:pointer;display:inline-block}
+  .logo .fit{color:var(--turuncu);text-shadow:0 0 15px rgba(196,74,26,0.6)}
+  .logo .amp{color:rgba(243,240,230,0.2)}
+  .logo .lez{color:var(--neon-yesil);text-shadow:0 0 15px rgba(15,157,88,0.6)}
+  nav ul{display:flex;gap:2rem;list-style:none}
+  nav ul a{color:#F3F0E6;text-decoration:none;font-weight:700;font-size:0.9rem;opacity:0.5;transition:opacity 0.2s,color 0.2s,text-shadow 0.2s}
+  nav ul a:hover{opacity:1;color:var(--neon-yesil);text-shadow:0 0 10px rgba(15,157,88,0.5)}
+  nav ul a.active{opacity:1;color:var(--neon-yesil);text-shadow:0 0 10px rgba(15,157,88,0.5)}
+  .nav-btn{background:transparent;color:var(--neon-yesil);border:1.5px solid var(--neon-yesil);padding:0.6rem 1.5rem;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;transition:all 0.2s;box-shadow:0 0 12px rgba(15,157,88,0.2)}
+  .nav-btn:hover{background:var(--neon-yesil);color:#0a0f0a;box-shadow:0 0 25px rgba(15,157,88,0.5)}
+  .nav-toggle{display:none;flex-direction:column;gap:5px;background:transparent;border:none;padding:0.5rem}
+  .nav-toggle span{width:24px;height:2px;background:var(--neon-yesil);box-shadow:0 0 6px rgba(15,157,88,0.5);transition:transform 0.25s,opacity 0.25s}
+  .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .nav-toggle.open span:nth-child(2){opacity:0}
+  .nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+ 
+  /* HERO */
+  .hero{min-height:100vh;display:flex;align-items:center;padding:8rem 4rem 4rem;position:relative;z-index:1}
+  .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:4rem;align-items:center;max-width:1200px;margin:0 auto}
+  .hero-text .tag{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(15,157,88,0.08);color:var(--neon-yesil);border:1px solid rgba(15,157,88,0.25);padding:0.35rem 1rem;border-radius:50px;font-size:0.82rem;font-weight:800;margin-bottom:1.8rem;text-shadow:0 0 8px rgba(15,157,88,0.4);box-shadow:0 0 15px rgba(15,157,88,0.1);animation:tagPulse 2s ease-in-out infinite}
+  .hero-text h1{font-family:'Poppins',sans-serif;font-size:clamp(2.8rem,5.5vw,4.8rem);font-weight:900;line-height:1.05;margin-bottom:1.5rem;letter-spacing:-2px}
+  .hero-text h1 .t{color:var(--turuncu);text-shadow:0 0 20px rgba(196,74,26,0.5)}
+  .hero-text h1 .y{color:var(--neon-yesil);text-shadow:0 0 20px rgba(15,157,88,0.5)}
+  .hero-text p{font-size:1.05rem;color:rgba(243,240,230,0.55);line-height:1.8;margin-bottom:2.5rem;max-width:460px;font-weight:600}
+  .hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+  .btn-primary{background:var(--turuncu);color:white;padding:0.9rem 2rem;border-radius:50px;font-weight:800;font-size:1rem;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 0 25px rgba(196,74,26,0.4);display:inline-block}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 0 40px rgba(196,74,26,0.6)}
+  .btn-secondary{background:transparent;color:#F3F0E6;padding:0.9rem 2rem;border-radius:50px;font-weight:800;font-size:1rem;text-decoration:none;border:1.5px solid rgba(243,240,230,0.15);transition:all 0.2s;display:inline-block}
+  .btn-secondary:hover{border-color:var(--neon-yesil);color:var(--neon-yesil);box-shadow:0 0 15px rgba(15,157,88,0.2)}
+  .hero-cards{display:flex;flex-direction:column;gap:1rem;position:relative}
+  .rotating-ring-wrap{position:absolute;top:-60px;right:-60px;width:200px;height:200px;z-index:0;pointer-events:none}
+  .ring{position:absolute;border-radius:50%;border-style:solid;border-color:transparent;animation:spin linear infinite}
+  .ring-1{inset:0;border-width:2px;border-top-color:rgba(15,157,88,0.6);border-right-color:rgba(15,157,88,0.2);animation-duration:8s;box-shadow:0 0 15px rgba(15,157,88,0.2)}
+  .ring-2{inset:20px;border-width:1.5px;border-bottom-color:rgba(190,20,110,0.5);border-left-color:rgba(190,20,110,0.15);animation-duration:5s;animation-direction:reverse}
+  .ring-3{inset:40px;border-width:1px;border-top-color:rgba(124,58,178,0.5);border-right-color:rgba(124,58,178,0.15);animation-duration:12s}
+  .ring-dot{position:absolute;inset:55px;border-radius:50%;background:radial-gradient(circle,rgba(15,157,88,0.15),transparent);border:1px solid rgba(15,157,88,0.2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;animation:counterSpin 8s linear infinite}
+  .floating-badge{position:absolute;background:rgba(15,157,88,0.08);border:1px solid rgba(15,157,88,0.25);border-radius:50px;padding:0.4rem 0.9rem;font-size:0.78rem;font-weight:800;color:var(--neon-yesil);text-shadow:0 0 8px rgba(15,157,88,0.4);animation:floatBadge 3s ease-in-out infinite;backdrop-filter:blur(5px);white-space:nowrap}
+  .fb-1{top:-20px;left:-30px;animation-delay:0s}
+  .fb-2{bottom:10px;left:-40px;animation-delay:1s;background:rgba(196,74,26,0.08);border-color:rgba(196,74,26,0.25);color:var(--turuncu);text-shadow:0 0 8px rgba(196,74,26,0.4)}
+  .hero-card{border-radius:24px;padding:1.6rem;position:relative;transition:transform 0.3s,box-shadow 0.3s;backdrop-filter:blur(10px);z-index:1}
+  .hero-card:hover{transform:translateY(-5px)}
+  .hc-fit{background:rgba(196,74,26,0.07);border:1.5px solid rgba(196,74,26,0.25);box-shadow:0 0 30px rgba(196,74,26,0.1),inset 0 0 30px rgba(196,74,26,0.03)}
+  .hc-fit:hover{box-shadow:0 0 50px rgba(196,74,26,0.25)}
+  .hc-yem{background:rgba(15,157,88,0.06);border:1.5px solid rgba(15,157,88,0.2);box-shadow:0 0 30px rgba(15,157,88,0.08),inset 0 0 30px rgba(15,157,88,0.03)}
+  .hc-yem:hover{box-shadow:0 0 50px rgba(15,157,88,0.2)}
+  .hc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.8rem}
+  .hc-emoji{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:rgba(243,240,230,0.05);border:1px solid rgba(243,240,230,0.08)}
+  .play-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:white;font-weight:800}
+  .play-t{background:var(--turuncu);box-shadow:0 0 15px rgba(196,74,26,0.5)}
+  .play-y{background:var(--neon-yesil);color:#0a0f0a;box-shadow:0 0 15px rgba(15,157,88,0.5)}
+  .hc-label{font-size:0.72rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:0.4;margin-bottom:0.3rem}
+  .hc-title{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;letter-spacing:-0.5px}
+  .hc-meta{font-size:0.8rem;font-weight:700;opacity:0.4;margin-top:0.5rem}
+ 
+  /* KÜP VİTRİNİ (3D showcase) */
+  .kup-section{position:relative;z-index:1;min-height:520px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:5rem 0;border-top:1px solid rgba(243,240,230,0.06);border-bottom:1px solid rgba(243,240,230,0.06)}
+  .kup-bg-text{position:absolute;top:50%;transform:translateY(-50%);font-family:'Poppins',sans-serif;font-weight:900;font-size:clamp(6rem,16vw,13rem);letter-spacing:-4px;color:rgba(243,240,230,0.06);white-space:nowrap;z-index:0;pointer-events:none;user-select:none}
+  .kbt-sol{left:-2vw}
+  .kbt-sag{right:-2vw}
+  .kup-etiket{position:absolute;top:2.2rem;left:50%;transform:translateX(-50%);z-index:2;text-align:center}
+  .kup-etiket span{font-size:0.72rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:0.4}
+  .kup-etiket h2{font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:-0.5px;margin-top:0.3rem}
+  .kup-etiket h2 span{color:var(--turuncu)}
+  .kup-sahne{position:relative;z-index:1;width:230px;height:230px;perspective:1100px}
+  .kup{position:relative;width:100%;height:100%;transform-style:preserve-3d;animation:kupDondur 16s linear infinite}
+  .kup-yuz{position:absolute;width:230px;height:230px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.6rem;font-size:2.6rem;box-shadow:0 20px 50px rgba(243,240,230,0.18);backdrop-filter:blur(4px)}
+  .kup-yuz span{font-family:'Poppins',sans-serif;font-size:0.9rem;font-weight:800;letter-spacing:-0.3px;color:#F3F0E6}
+  .ky-on{background:linear-gradient(150deg,rgba(196,74,26,0.16),rgba(196,74,26,0.05));border:1.5px solid rgba(196,74,26,0.3);transform:rotateY(0deg) translateZ(115px)}
+  .ky-arka{background:linear-gradient(150deg,rgba(15,157,88,0.16),rgba(15,157,88,0.05));border:1.5px solid rgba(15,157,88,0.3);transform:rotateY(180deg) translateZ(115px)}
+  .ky-sag{background:linear-gradient(150deg,rgba(124,58,178,0.14),rgba(124,58,178,0.04));border:1.5px solid rgba(124,58,178,0.28);transform:rotateY(90deg) translateZ(115px)}
+  .ky-sol{background:linear-gradient(150deg,rgba(8,126,149,0.14),rgba(8,126,149,0.04));border:1.5px solid rgba(8,126,149,0.28);transform:rotateY(-90deg) translateZ(115px)}
+  .ky-ust{background:linear-gradient(150deg,rgba(190,20,110,0.13),rgba(190,20,110,0.04));border:1.5px solid rgba(190,20,110,0.26);transform:rotateX(90deg) translateZ(115px)}
+  .ky-alt{background:linear-gradient(150deg,rgba(196,74,26,0.1),rgba(15,157,88,0.06));border:1.5px solid rgba(243,240,230,0.15);transform:rotateX(-90deg) translateZ(115px)}
+  @keyframes kupDondur{from{transform:rotateX(-18deg) rotateY(0deg)}to{transform:rotateX(-18deg) rotateY(360deg)}}
+ 
+ 
+  /* STATS */
+  .stats{position:relative;z-index:1;background:rgba(243,240,230,0.02);border-top:1px solid rgba(243,240,230,0.06);border-bottom:1px solid rgba(243,240,230,0.06);padding:2.5rem 4rem;backdrop-filter:blur(5px)}
+  .stats-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-around;text-align:center;flex-wrap:wrap;gap:1.5rem}
+  .stat-num{font-family:'Poppins',sans-serif;font-size:2.8rem;font-weight:900;letter-spacing:-2px;line-height:1}
+  .sn-t{color:var(--turuncu);text-shadow:0 0 20px rgba(196,74,26,0.5)}
+  .sn-y{color:var(--neon-yesil);text-shadow:0 0 20px rgba(15,157,88,0.5)}
+  .sn-w{color:#F3F0E6}
+  .stat-label{font-size:0.82rem;font-weight:700;opacity:0.4;text-transform:uppercase;letter-spacing:1px;margin-top:0.3rem}
+ 
+  /* SECTIONS */
+  .sections{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;max-width:1200px;margin:0 auto;padding:6rem 4rem;gap:4rem}
+  .sec-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.8rem}
+  .sec-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+  .si-t{background:rgba(196,74,26,0.1);border:1px solid rgba(196,74,26,0.2)}
+  .si-y{background:rgba(15,157,88,0.08);border:1px solid rgba(15,157,88,0.15)}
+  .sec-sub{font-size:0.72rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:0.35}
+  .sec-header h2{font-family:'Poppins',sans-serif;font-size:1.7rem;font-weight:900;letter-spacing:-1px}
+  .vcard{background:rgba(243,240,230,0.03);border-radius:18px;overflow:hidden;margin-bottom:1rem;border:1.5px solid rgba(243,240,230,0.07);transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s;display:flex;backdrop-filter:blur(5px)}
+  .vcard:hover{transform:translateX(6px)}
+  .vcard-tur:hover{border-color:rgba(196,74,26,0.4);box-shadow:0 0 20px rgba(196,74,26,0.1)}
+  .vcard-yes:hover{border-color:rgba(15,157,88,0.3);box-shadow:0 0 20px rgba(15,157,88,0.08)}
+  .vcard-thumb{width:90px;min-width:90px;display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative}
+  .vt-t{background:rgba(196,74,26,0.1)}
+  .vt-y{background:rgba(15,157,88,0.07)}
+  .vcard-dur{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.7);color:#F3F0E6;font-size:0.65rem;font-weight:800;padding:0.15rem 0.4rem;border-radius:6px}
+  .vcard-info{padding:1rem 1.2rem}
+  .vcard-info h3{font-size:0.95rem;font-weight:800;margin-bottom:0.3rem;font-family:'Poppins',sans-serif;letter-spacing:-0.3px}
+  .vcard-info p{font-size:0.8rem;opacity:0.4;font-weight:700}
+  .tumu{font-weight:800;font-size:0.9rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;margin-top:0.5rem;transition:gap 0.2s,text-shadow 0.2s}
+  .tumu:hover{gap:0.6rem}
+  .tm-t{color:var(--turuncu)}
+  .tm-t:hover{text-shadow:0 0 10px rgba(196,74,26,0.5)}
+  .tm-y{color:var(--neon-yesil)}
+  .tm-y:hover{text-shadow:0 0 10px rgba(15,157,88,0.5)}
+ 
+  /* MINI 360° LENS (video kartları üzerinde) */
+  .vcard-thumb{position:relative;overflow:visible}
+  .mini360{position:absolute;top:6px;left:6px;z-index:3}
+  .mini360-frame{
+    width:34px;height:34px;border-radius:9px;
+    background:rgba(13,18,16,0.72);
+    border:1px solid rgba(243,240,230,0.35);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;cursor:zoom-in;
+    transform-origin:top left;
+    transition:transform 0.35s cubic-bezier(.2,.8,.2,1),box-shadow 0.35s,border-color 0.35s;
+    overflow:hidden;
+  }
+  .mini360-frame:hover,.mini360-frame:focus-visible{
+    transform:scale(3.1);
+    box-shadow:0 10px 30px rgba(0,0,0,0.5),0 0 0 1px rgba(124,58,178,0.5),0 0 25px rgba(124,58,178,0.35);
+    border-color:rgba(124,58,178,0.7);
+  }
+  .mini360-video{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; opacity:0; transition:opacity 0.2s;
+    pointer-events:none;
+  }
+  .mini360-video.mv-ready{opacity:1}
+  .mini360-video.mv-ready ~ .mini360-figure,
+  .mini360-video.mv-ready ~ .mini360-ring{display:none}
+  .mini360-figure{font-size:1rem;animation:mini360Nabız 2.4s ease-in-out infinite}
+  @keyframes mini360Nabız{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+  .mini360-ring{position:absolute;inset:0;animation:spin 9s linear infinite}
+  .mini360-ring span{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--mor);box-shadow:0 0 5px var(--mor);top:50%;left:50%;margin:-1.5px}
+  .mini360-ring span:nth-child(1){transform:rotate(0deg) translateY(-15px)}
+  .mini360-ring span:nth-child(2){transform:rotate(45deg) translateY(-15px)}
+  .mini360-ring span:nth-child(3){transform:rotate(90deg) translateY(-15px)}
+  .mini360-ring span:nth-child(4){transform:rotate(135deg) translateY(-15px)}
+  .mini360-ring span:nth-child(5){transform:rotate(180deg) translateY(-15px)}
+  .mini360-ring span:nth-child(6){transform:rotate(225deg) translateY(-15px)}
+  .mini360-ring span:nth-child(7){transform:rotate(270deg) translateY(-15px)}
+  .mini360-ring span:nth-child(8){transform:rotate(315deg) translateY(-15px)}
+  .mini360-tag{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);font-size:0.5rem;font-weight:800;letter-spacing:0.5px;color:#fff;background:var(--mor);padding:0.05rem 0.3rem;border-radius:6px;white-space:nowrap;opacity:0;transition:opacity 0.25s}
+  .mini360-frame:hover .mini360-tag,.mini360-frame:focus-visible .mini360-tag{opacity:1}
+  @media(prefers-reduced-motion:reduce){.mini360-figure,.mini360-ring{animation:none}}
+  @media(max-width:768px){.mini360-frame:hover,.mini360-frame:focus-visible{transform:scale(2.2)}}
+
+  /* LIFE HACK BÖLÜMÜ */
+  .lifehack-section{position:relative;z-index:1;padding:6rem 4rem;border-top:1px solid rgba(243,240,230,0.06);background:rgba(124,58,178,0.05)}
+  .lifehack-baslik{text-align:center;max-width:560px;margin:0 auto 3rem}
+  .lifehack-baslik h2{font-family:'Poppins',sans-serif;font-size:2.2rem;font-weight:900;letter-spacing:-1px}
+  .lifehack-baslik h2 span{color:var(--mor);text-shadow:0 0 15px rgba(124,58,178,0.4)}
+  .lifehack-alt{color:rgba(243,240,230,0.45);font-weight:600;line-height:1.7;margin-top:0.6rem}
+  .lifehack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1200px;margin:0 auto}
+  .lifehack-kart{background:rgba(243,240,230,0.03);border:1.5px solid rgba(124,58,178,0.2);border-radius:20px;padding:1.8rem;position:relative;backdrop-filter:blur(5px);transition:transform 0.2s,border-color 0.2s,box-shadow 0.2s}
+  .lifehack-kart:hover{transform:translateY(-5px);border-color:rgba(124,58,178,0.5);box-shadow:0 0 25px rgba(124,58,178,0.18)}
+  .lh-icon{font-size:1.8rem;margin-bottom:0.8rem}
+  .lh-dur{position:absolute;top:1.6rem;right:1.6rem;font-size:0.7rem;font-weight:800;color:var(--mor);background:rgba(124,58,178,0.15);padding:0.2rem 0.5rem;border-radius:8px}
+  .lifehack-kart h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:800;margin-bottom:0.4rem;letter-spacing:-0.3px;color:#F3F0E6}
+  .lifehack-kart p{font-size:0.85rem;color:rgba(243,240,230,0.5);font-weight:600;line-height:1.6}
+  .lh-badge{display:inline-block;margin-top:0.9rem;font-size:0.68rem;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:var(--mor);border:1px solid rgba(124,58,178,0.4);padding:0.2rem 0.6rem;border-radius:50px}
+
+  @media(max-width:768px){
+    .lifehack-section{padding:4rem 1.5rem}
+    .lifehack-grid{grid-template-columns:1fr}
+  }
+
+  /* HAKKIMDA */
+  .hakkimda-section {
+    position: relative; z-index: 1;
+    background: rgba(243,240,230,0.02);
+    border-top: 1px solid rgba(243,240,230,0.06);
+    padding: 6rem 4rem;
+  }
+  .hakkimda-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 5rem; align-items: center;
+  }
+  .foto-wrap {
+    position: relative;
+  }
+  .foto-cerceve {
+    width: 100%; aspect-ratio: 3/4;
+    border-radius: 30px;
+    background: linear-gradient(135deg, rgba(15,157,88,0.08), rgba(196,74,26,0.08));
+    border: 2px solid rgba(15,157,88,0.2);
+    box-shadow: 0 0 40px rgba(15,157,88,0.1), inset 0 0 40px rgba(15,157,88,0.03);
+    display: flex; flex-direction:column; align-items: center; justify-content: center;
+    gap: 1rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .foto-placeholder-emoji { font-size: 5rem; }
+  .foto-placeholder-text { font-size: 0.85rem; font-weight: 700; opacity: 0.35; text-align: center; line-height: 1.6; padding: 0 1.5rem; }
+  .foto-cerceve::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(13,18,16,0.8) 100%);
+  }
+  .foto-badge {
+    position: absolute;
+    background: rgba(15,157,88,0.1);
+    border: 1px solid rgba(15,157,88,0.3);
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-size: 0.82rem; font-weight: 800;
+    color: var(--neon-yesil);
+    text-shadow: 0 0 8px rgba(15,157,88,0.4);
+    backdrop-filter: blur(5px);
+  }
+  .fb-sol { bottom: 20px; left: -20px; animation: floatBadge 3s ease-in-out infinite; }
+  .fb-sag { top: 20px; right: -20px; animation: floatBadge 3s 1s ease-in-out infinite; background:rgba(196,74,26,0.1); border-color:rgba(196,74,26,0.3); color:var(--turuncu); text-shadow:0 0 8px rgba(196,74,26,0.4); }
+ 
+  .hakkimda-content .sec-sub { font-size:0.72rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; opacity:0.35; margin-bottom:0.5rem; }
+  .hakkimda-content h2 { font-family:'Poppins',sans-serif; font-size:2.5rem; font-weight:900; letter-spacing:-1.5px; margin-bottom:1.5rem; line-height:1.1; }
+  .hakkimda-content h2 span { color:var(--neon-yesil); text-shadow:0 0 15px rgba(15,157,88,0.4); }
+  .hakkimda-content p { color:rgba(243,240,230,0.55); line-height:1.8; font-weight:600; margin-bottom:1rem; font-size:1rem; }
+ 
+  .ozellik-listesi { margin: 2rem 0; display:flex; flex-direction:column; gap:0.8rem; }
+  .ozellik {
+    display: flex; align-items: center; gap: 1rem;
+    background: rgba(243,240,230,0.03);
+    border: 1px solid rgba(243,240,230,0.07);
+    border-radius: 14px; padding: 0.9rem 1.2rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .ozellik:hover { border-color: rgba(15,157,88,0.2); background:rgba(15,157,88,0.03); }
+  .ozellik-icon { font-size: 1.4rem; }
+  .ozellik-text h4 { font-size: 0.92rem; font-weight: 800; margin-bottom: 0.1rem; }
+  .ozellik-text p { font-size: 0.78rem; opacity: 0.4; font-weight: 600; }
+ 
+  /* YORUMLAR */
+  .yorumlar-section {
+    position: relative; z-index: 1;
+    padding: 6rem 4rem;
+    border-top: 1px solid rgba(243,240,230,0.06);
+  }
+  .yorumlar-baslik { text-align:center; margin-bottom: 3rem; }
+  .yorumlar-baslik .sec-sub2 { font-size:0.72rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; opacity:0.35; margin-bottom:0.5rem; display:block; }
+  .yorumlar-baslik h2 { font-family:'Poppins',sans-serif; font-size:2.2rem; font-weight:900; letter-spacing:-1px; }
+  .yorumlar-baslik h2 span { color:var(--turuncu); text-shadow:0 0 15px rgba(196,74,26,0.4); }
+ 
+  .yorumlar-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; max-width: 1200px; margin: 0 auto;
+  }
+  .yorum-kart {
+    background: rgba(243,240,230,0.03);
+    border: 1.5px solid rgba(243,240,230,0.07);
+    border-radius: 20px; padding: 1.8rem;
+    backdrop-filter: blur(5px);
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .yorum-kart:hover { transform: translateY(-5px); border-color: rgba(15,157,88,0.2); box-shadow: 0 0 25px rgba(15,157,88,0.08); }
+  .yorum-yildiz { color: #ffd700; font-size: 0.9rem; margin-bottom: 1rem; text-shadow: 0 0 10px rgba(255,215,0,0.4); }
+  .yorum-metin { font-size: 0.92rem; line-height: 1.7; color: rgba(243,240,230,0.65); font-weight: 600; margin-bottom: 1.2rem; font-style: italic; }
+  .yorum-kisi { display:flex; align-items:center; gap:0.8rem; }
+  .yorum-avatar { width:40px;height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; border:1.5px solid rgba(243,240,230,0.1); }
+  .ya-t { background:rgba(196,74,26,0.1); }
+  .ya-y { background:rgba(15,157,88,0.08); }
+  .ya-p { background:rgba(190,20,110,0.1); }
+  .yorum-isim { font-size:0.88rem; font-weight:800; }
+  .yorum-etiket { font-size:0.72rem; opacity:0.4; font-weight:700; }
+ 
+  /* SOSYAL MEDYA */
+  .sosyal-section {
+    position: relative; z-index: 1;
+    background: rgba(243,240,230,0.02);
+    border-top: 1px solid rgba(243,240,230,0.06);
+    padding: 4rem;
+    text-align: center;
+  }
+  .sosyal-baslik { font-family:'Poppins',sans-serif; font-size:1.6rem; font-weight:900; letter-spacing:-0.5px; margin-bottom:0.5rem; }
+  .sosyal-alt { color:rgba(243,240,230,0.4); font-weight:600; margin-bottom:2.5rem; font-size:0.95rem; }
+  .sosyal-linkler { display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap; }
+  .sosyal-btn {
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 0.9rem 1.8rem; border-radius: 50px;
+    font-weight: 800; font-size: 0.95rem; text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1.5px solid;
+  }
+  .sosyal-btn:hover { transform: translateY(-3px); }
+  .sb-ig { color: #e1306c; border-color: rgba(225,48,108,0.3); background: rgba(225,48,108,0.07); }
+  .sb-ig:hover { box-shadow: 0 0 25px rgba(225,48,108,0.3); border-color: rgba(225,48,108,0.6); }
+  .sb-yt { color: #ff0000; border-color: rgba(255,0,0,0.3); background: rgba(255,0,0,0.07); }
+  .sb-yt:hover { box-shadow: 0 0 25px rgba(255,0,0,0.3); border-color: rgba(255,0,0,0.6); }
+  .sb-tt { color: #F3F0E6; border-color: rgba(243,240,230,0.15); background: rgba(243,240,230,0.05); }
+  .sb-tt:hover { box-shadow: 0 0 25px rgba(243,240,230,0.15); border-color: rgba(243,240,230,0.4); }
+  .sb-wa { color: #25d366; border-color: rgba(37,211,102,0.3); background: rgba(37,211,102,0.07); }
+  .sb-wa:hover { box-shadow: 0 0 25px rgba(37,211,102,0.3); border-color: rgba(37,211,102,0.6); }
+ 
+  /* ABONE */
+  .abone-wrap{position:relative;z-index:1;padding:5rem 2rem;text-align:center;background:rgba(243,240,230,0.02);border-top:1px solid rgba(243,240,230,0.05)}
+  .abone{max-width:600px;margin:0 auto}
+  .abone .tag2{display:inline-block;background:rgba(15,157,88,0.08);color:var(--neon-yesil);border:1px solid rgba(15,157,88,0.2);padding:0.3rem 1rem;border-radius:50px;font-size:0.8rem;font-weight:800;letter-spacing:1px;margin-bottom:1.5rem;text-shadow:0 0 8px rgba(15,157,88,0.4)}
+  .abone h2{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:900;color:#F3F0E6;letter-spacing:-1.5px;margin-bottom:1rem;line-height:1.1}
+  .abone h2 span{color:var(--turuncu);text-shadow:0 0 15px rgba(196,74,26,0.4)}
+  .abone p{color:rgba(243,240,230,0.45);margin-bottom:2rem;line-height:1.7;font-weight:600}
+  .abone-form{display:flex;gap:0.8rem;max-width:480px;margin:0 auto}
+  .abone-form input{flex:1;background:rgba(243,240,230,0.04);border:1.5px solid rgba(243,240,230,0.15);color:#F3F0E6;padding:0.9rem 1.5rem;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:600;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+  .abone-form input::placeholder{color:rgba(243,240,230,0.25)}
+  .abone-form input:focus{border-color:var(--neon-yesil);box-shadow:0 0 15px rgba(15,157,88,0.2)}
+  .abone-form button{background:var(--turuncu);color:white;border:none;padding:0.9rem 1.8rem;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;white-space:nowrap;font-size:0.95rem;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 0 20px rgba(196,74,26,0.4)}
+  .abone-form button:hover{transform:scale(1.05);box-shadow:0 0 35px rgba(196,74,26,0.6)}
+  .abone-mesaj{margin-top:1rem;font-size:0.88rem;font-weight:700;color:var(--neon-yesil);min-height:1.2em;opacity:0;transition:opacity 0.3s}
+  .abone-mesaj.show{opacity:1}
+ 
+  /* İLETİŞİM */
+  .iletisim-section{position:relative;z-index:1;padding:6rem 4rem;border-top:1px solid rgba(243,240,230,0.06);text-align:center}
+  .iletisim-baslik{max-width:560px;margin:0 auto 3rem}
+  .iletisim-baslik h2{font-family:'Poppins',sans-serif;font-size:2.2rem;font-weight:900;letter-spacing:-1px;margin:0.4rem 0 0.8rem}
+  .iletisim-baslik h2 span{color:var(--neon-yesil);text-shadow:0 0 15px rgba(15,157,88,0.4)}
+  .iletisim-alt{color:rgba(243,240,230,0.45);font-weight:600;line-height:1.7}
+  .iletisim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:900px;margin:0 auto}
+  .iletisim-kart{background:rgba(243,240,230,0.03);border:1.5px solid rgba(243,240,230,0.07);border-radius:20px;padding:2rem 1.5rem;text-decoration:none;color:#F3F0E6;transition:transform 0.2s,border-color 0.2s,box-shadow 0.2s}
+  .iletisim-kart:hover{transform:translateY(-5px)}
+  .ik-icon{font-size:1.8rem;margin-bottom:0.8rem}
+  .ik-baslik{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.02rem;margin-bottom:0.3rem}
+  .ik-alt{font-size:0.82rem;opacity:0.45;font-weight:600}
+  .ik-wa:hover{border-color:rgba(37,211,102,0.4);box-shadow:0 0 25px rgba(37,211,102,0.15)}
+  .ik-mail:hover{border-color:rgba(8,126,149,0.4);box-shadow:0 0 25px rgba(8,126,149,0.15)}
+  .ik-ig:hover{border-color:rgba(190,20,110,0.4);box-shadow:0 0 25px rgba(190,20,110,0.15)}
+ 
+  /* FOOTER */
+  footer{position:relative;z-index:1;border-top:1px solid rgba(243,240,230,0.06);padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+  .footer-logo{font-family:'Poppins',sans-serif;font-size:1.2rem;font-weight:900;letter-spacing:-0.5px}
+  footer p{font-size:0.85rem;opacity:0.3;font-weight:700}
+  .social-links{display:flex;gap:1rem}
+  .social-links a{color:#F3F0E6;text-decoration:none;font-weight:800;font-size:0.85rem;opacity:0.35;transition:opacity 0.2s,color 0.2s}
+  .social-links a:hover{opacity:1;color:var(--neon-yesil)}
+ 
+  /* WHATSAPP BUTONU */
+  .whatsapp-fixed {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+    width: 58px; height: 58px; border-radius: 50%;
+    background: #25d366;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; text-decoration: none;
+    box-shadow: 0 0 20px rgba(37,211,102,0.4), 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: floatBadge 3s ease-in-out infinite;
+  }
+  .whatsapp-fixed:hover { transform: scale(1.15); box-shadow: 0 0 35px rgba(37,211,102,0.6); }
+ 
+  .hero-text{animation:fadeUp 0.7s ease forwards}
+  .hero-cards{animation:fadeUp 0.7s 0.15s ease both}
+ 
+  @media(max-width:768px){
+    nav{padding:1rem 1.5rem;flex-wrap:wrap}
+    .nav-btn-desktop{display:none}
+    .nav-toggle{display:flex}
+    nav ul{display:flex;flex-direction:column;width:100%;gap:0;max-height:0;overflow:hidden;transition:max-height 0.3s ease;order:3;margin-top:0}
+    nav ul.open{max-height:300px;margin-top:1rem}
+    nav ul li{width:100%}
+    nav ul a{display:block;padding:0.9rem 0;border-top:1px solid rgba(243,240,230,0.06)}
+    .hero{padding:6rem 1.5rem 3rem}
+    .hero-grid{grid-template-columns:1fr;gap:2.5rem}
+    .kup-section{min-height:380px;padding:6.5rem 1rem 3rem}
+    .kup-sahne{transform:scale(0.72)}
+    .kup-bg-text{font-size:clamp(4rem,22vw,7rem)}
+    .kup-etiket{top:1.2rem;padding:0 1rem}
+    .kup-etiket h2{font-size:1.2rem}
+    .sections{grid-template-columns:1fr;padding:3rem 1.5rem;gap:2rem}
+    .hakkimda-section{padding:4rem 1.5rem}
+    .hakkimda-inner{grid-template-columns:1fr;gap:2.5rem}
+    .yorumlar-section{padding:4rem 1.5rem}
+    .yorumlar-grid{grid-template-columns:1fr}
+    .sosyal-section{padding:3rem 1.5rem}
+    .iletisim-section{padding:4rem 1.5rem}
+    .iletisim-grid{grid-template-columns:1fr}
+    .stats{padding:2rem 1.5rem}
+    footer{flex-direction:column;text-align:center;padding:2rem 1.5rem}
+    .abone-form{flex-direction:column}
+    body{cursor:auto}
+  }
+
+  /* SAYFA BAŞLIĞI (alt sayfalar için) */
+  .page-header{position:relative;z-index:1;padding:9rem 4rem 3rem;max-width:1200px;margin:0 auto}
+  .page-breadcrumb{font-size:0.85rem;font-weight:700;opacity:0.4;margin-bottom:1rem}
+  .page-breadcrumb a{color:var(--neon-yesil);text-decoration:none}
+  .page-breadcrumb a:hover{text-shadow:0 0 8px rgba(15,157,88,0.5)}
+  .page-header h1{font-family:'Poppins',sans-serif;font-size:clamp(2rem,4.5vw,3.2rem);font-weight:900;letter-spacing:-1.5px;margin-bottom:0.8rem}
+  .page-header h1 span{color:var(--neon-yesil);text-shadow:0 0 15px rgba(15,157,88,0.4)}
+  .page-header p{color:rgba(243,240,230,0.5);font-weight:600;font-size:1.02rem;max-width:520px}
+  .page-grid{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:1rem 4rem 6rem;display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem}
+  .vcard-soon{border-style:dashed!important;opacity:0.55;align-items:center}
+  .vcard-soon .vcard-thumb{font-size:1.4rem}
+  .vcard-soon .vcard-info h3{font-weight:700}
+  .hakkimda-section.page-version{padding-top:9rem}
+  .iletisim-section.page-version{padding-top:9rem}
+  .lifehack-section.page-version{padding-top:9rem}
+  @media(max-width:768px){
+    .page-header{padding:7rem 1.5rem 2rem}
+    .page-grid{grid-template-columns:1fr;padding:1rem 1.5rem 4rem}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo logo-link"><span class="fit">Fit</span><span class="amp"> & </span><span class="lez">Lezzet</span></a>
+  <ul id="navLinks">
+    <li><a href="index.html">Ana Sayfa</a></li>
+    <li><a href="fitness.html">Fitness</a></li>
+    <li><a href="tarifler.html">Tarifler</a></li>
+    <li><a href="lifehack.html">Life Hack</a></li>
+    <li><a href="hakkimda.html" class="active">Hakkımda</a></li>
+    <li><a href="iletisim.html">İletişim</a></li>
+  </ul>
+  <a href="index.html#abone" class="nav-btn nav-btn-desktop">Abone Ol 🌿</a>
+  <button class="nav-toggle" id="navToggle" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HAKKIMDA -->
+<section class="hakkimda-section page-version">
+  <div class="page-breadcrumb" style="max-width:1200px;margin:0 auto 1.5rem;padding:0 4rem"><a href="index.html">Ana Sayfa</a> / Hakkımda</div>
+  <div class="hakkimda-inner">
+    <div class="foto-wrap">
+      <div class="foto-cerceve">
+        <div class="foto-placeholder-emoji">🧑‍🍳💪</div>
+        <div class="foto-placeholder-text">Buraya kendi fotoğrafını<br>ekleyeceksin 📸</div>
+      </div>
+      <div class="foto-badge fb-sol">🏋️ 10+ yıl fitness</div>
+      <div class="foto-badge fb-sag">👨‍🍳 Profesyonel aşçı</div>
+    </div>
+    <div class="hakkimda-content">
+      <div class="sec-sub">Beni Tanı</div>
+      <h2>Hem mutfakta<br>hem sahada<br><span>uzmanım</span></h2>
+      <p>10 yılı aşkın süredir fitness yapıyor, aynı zamanda usta bir aşçı olarak çalışıyorum. Bu iki tutkumu birleştirerek sağlıklı yaşamı herkes için erişilebilir kılmak istiyorum.</p>
+      <p>1 dakikalık videolarımla hem hareket et hem de lezzetli ye. Zaman kaybı yok, sonuç var!</p>
+      <p>İLK ÖNCE NİYET ET</p>
+      <p>SONRA HAREKET ET</p>
+      <p>VE DE TEKRAR</p>
+      <div class="ozellik-listesi">
+        <div class="ozellik">
+          <div class="ozellik-icon">🏋️</div>
+          <div class="ozellik-text"><h4>Sertifikalı Fitness Eğitmeni</h4><p>10+ yıl deneyim · Vücut ağırlığı & fonksiyonel antrenman</p></div>
+        </div>
+        <div class="ozellik">
+          <div class="ozellik-icon">👨‍🍳</div>
+          <div class="ozellik-text"><h4>Profesyonel Aşçı</h4><p>Sağlıklı & lezzetli tariflerin ustası</p></div>
+        </div>
+        <div class="ozellik">
+          <div class="ozellik-icon">🎯</div>
+          <div class="ozellik-text"><h4>Pratik & Hızlı</h4><p>Her içerik 1 dakika · Herkes uygulayabilir</p></div>
+        </div>
+      </div>
+      <div class="hero-btns" style="margin-top:1rem">
+        <a href="fitness.html" class="btn-primary">🎬 Videolarımı İzle</a>
+        <a href="iletisim.html" class="btn-secondary">İletişime Geç →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <span style="color:var(--turuncu);text-shadow:0 0 10px rgba(196,74,26,0.4)">Fit</span>
+    <span style="color:rgba(243,240,230,0.2)"> & </span>
+    <span style="color:var(--neon-yesil);text-shadow:0 0 10px rgba(15,157,88,0.4)">Lezzet</span>
+  </div>
+  <p>© 2026 · Tüm hakları saklıdır</p>
+  <div class="social-links">
+    <a href="#" data-role="instagram-link">Instagram</a><a href="#" data-role="youtube-link">YouTube</a><a href="#" data-role="tiktok-link">TikTok</a>
+  </div>
+</footer>
+ 
+<!-- WHATSAPP SABİT BUTON -->
+<a href="#" target="_blank" rel="noopener" class="whatsapp-fixed" title="WhatsApp ile ulaş" data-role="whatsapp-link">💬</a>
+
+<script src="data/site-render.js"></script>
+
+<script>
+// MOBİL MENÜ
+const navToggle=document.getElementById('navToggle'),navLinks=document.getElementById('navLinks');
+navToggle.addEventListener('click',()=>{
+  const open=navLinks.classList.toggle('open');
+  navToggle.classList.toggle('open',open);
+  navToggle.setAttribute('aria-expanded',open);
+});
+navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+  navLinks.classList.remove('open');navToggle.classList.remove('open');navToggle.setAttribute('aria-expanded',false);
+}));
+
+// MINI 360° LENS — VİDEO OYNATMA
+// data-video attribute'una video linki/yolu yazıldığında hover/focus'ta oynar; boşsa placeholder kalır.
+document.querySelectorAll('.mini360').forEach(lens=>{
+  const frame=lens.querySelector('.mini360-frame');
+  const video=lens.querySelector('.mini360-video');
+  const src=video.dataset.video;
+  if(!src) return;
+  const activate=()=>{
+    if(video.src!==src){video.src=src;}
+    video.currentTime=0;
+    video.play().catch(()=>{});
+    video.classList.add('mv-ready');
+  };
+  const deactivate=()=>{
+    video.pause();
+    video.classList.remove('mv-ready');
+  };
+  frame.addEventListener('mouseenter',activate);
+  frame.addEventListener('mouseleave',deactivate);
+  frame.addEventListener('focus',activate);
+  frame.addEventListener('blur',deactivate);
+});
+
+// SCROLL'DA BELİRME ANİMASYONU
+const revealEls=document.querySelectorAll('.sec-header, .vcard, .yorum-kart, .iletisim-kart, .hakkimda-inner, .stats-inner > div, .lifehack-kart, .lifehack-baslik, .page-header, .page-grid > *');
+const revealObserver=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.style.animation='fadeUp 0.6s ease forwards';
+      revealObserver.unobserve(entry.target);
+    }
+  });
+},{threshold:0.15});
+revealEls.forEach(el=>{el.style.opacity='0';revealObserver.observe(el);});
+</script>
+
+<!-- 3D ORGANİK DALGA ARKA PLANI (Three.js) -->
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+const canvas = document.getElementById('particle-canvas');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.z = 20;
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+// İlk gösterilen versiyondaki palet: çoğunlukla sage yeşili, seyrek mercan vurgusu
+const COUNT = 2400;
+const positions = new Float32Array(COUNT * 3);
+const seeds = new Float32Array(COUNT);
+const colorMix = new Float32Array(COUNT);
+
+for (let i = 0; i < COUNT; i++) {
+  const i3 = i * 3;
+  positions[i3]     = (Math.random() - 0.5) * 60;
+  positions[i3 + 1] = (Math.random() - 0.5) * 34;
+  positions[i3 + 2] = (Math.random() - 0.5) * 30;
+  seeds[i] = Math.random() * Math.PI * 2;
+  colorMix[i] = Math.random() > 0.88 ? 1 : 0; // ~%12 mercan vurgusu
+}
+
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+geometry.setAttribute('seed', new THREE.BufferAttribute(seeds, 1));
+geometry.setAttribute('colorMix', new THREE.BufferAttribute(colorMix, 1));
+
+const sage = new THREE.Color(0xC4E86C);
+const coral = new THREE.Color(0xFF7A59);
+
+const material = new THREE.ShaderMaterial({
+  uniforms: {
+    uTime: { value: 0 },
+    uSage: { value: sage },
+    uCoral: { value: coral },
+    uMouse: { value: new THREE.Vector2(0, 0) },
+  },
+  vertexShader: `
+    uniform float uTime;
+    uniform vec2 uMouse;
+    attribute float seed;
+    attribute float colorMix;
+    varying float vColorMix;
+    varying float vAlpha;
+
+    void main() {
+      vColorMix = colorMix;
+      vec3 pos = position;
+
+      // katmanlı sinüsler: nefes alan, organik bir akım hissi
+      float t = uTime * 0.35 + seed;
+      pos.x += sin(t + pos.y * 0.08) * 1.8;
+      pos.y += cos(t * 0.8 + pos.x * 0.06) * 1.4;
+      pos.z += sin(t * 0.5 + pos.x * 0.05 + pos.y * 0.05) * 2.2;
+
+      // fareye doğru yumuşak sürüklenme
+      pos.x += uMouse.x * 3.0;
+      pos.y += uMouse.y * 2.0;
+
+      vAlpha = 0.35 + 0.35 * sin(t * 1.3);
+
+      vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+      gl_PointSize = (colorMix > 0.5 ? 3.2 : 2.0) * (28.0 / -mvPosition.z);
+      gl_Position = projectionMatrix * mvPosition;
+    }
+  `,
+  fragmentShader: `
+    uniform vec3 uSage;
+    uniform vec3 uCoral;
+    varying float vColorMix;
+    varying float vAlpha;
+
+    void main() {
+      float d = length(gl_PointCoord - vec2(0.5));
+      if (d > 0.5) discard;
+      float soft = smoothstep(0.5, 0.0, d);
+      vec3 color = mix(uSage, uCoral, vColorMix);
+      gl_FragColor = vec4(color, soft * vAlpha);
+    }
+  `,
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+});
+
+const points = new THREE.Points(geometry, material);
+scene.add(points);
+
+let targetMouse = { x: 0, y: 0 };
+let mouse = { x: 0, y: 0 };
+window.addEventListener('mousemove', (e) => {
+  targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  targetMouse.y = -((e.clientY / window.innerHeight) * 2 - 1);
+});
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  mouse.x += (targetMouse.x - mouse.x) * 0.02;
+  mouse.y += (targetMouse.y - mouse.y) * 0.02;
+
+  material.uniforms.uTime.value = reducedMotion ? 0 : t;
+  material.uniforms.uMouse.value.set(mouse.x, mouse.y);
+  points.rotation.y = reducedMotion ? 0 : Math.sin(t * 0.05) * 0.1;
+
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>

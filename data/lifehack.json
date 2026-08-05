@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "baslik": "Kitaplarla Ağırlık Antrenmanı",
+      "aciklama": "İki ağır kitap = dambıl seti. Evdeki en zor egzersiz ekipmanı kitaplığında saklı.",
+      "sure": "0:35",
+      "emoji": "📚"
+    },
+    {
+      "baslik": "Havluyla Direnç Bandı",
+      "aciklama": "Eski bir havlu, spor salonundaki direnç bandının işini fazlasıyla görüyor.",
+      "sure": "0:40",
+      "emoji": "🧣"
+    },
+    {
+      "baslik": "Sandalyeyle Denge Egzersizi",
+      "aciklama": "Mutfaktaki sandalye, dengeni ve bacak gücünü çalıştıran en pratik antrenörün.",
+      "sure": "0:30",
+      "emoji": "🪑"
+    }
+  ]
+}

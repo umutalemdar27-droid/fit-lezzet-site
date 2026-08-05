@@ -1,0 +1,74 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+locale: "tr"
+
+collections:
+  - name: "fitness"
+    label: "Fitness Videoları"
+    files:
+      - name: "fitness"
+        label: "Fitness Listesi"
+        file: "data/fitness.json"
+        fields:
+          - name: "items"
+            label: "Videolar"
+            widget: "list"
+            summary: "{{fields.baslik}}"
+            fields:
+              - { name: "baslik", label: "Başlık", widget: "string" }
+              - { name: "aciklama", label: "Açıklama", widget: "string" }
+              - { name: "sure", label: "Süre (örn. 1:00)", widget: "string", default: "1:00" }
+              - { name: "emoji", label: "Emoji", widget: "string", default: "💪" }
+              - { name: "video_url", label: "Video Linki (opsiyonel)", widget: "string", required: false }
+
+  - name: "tarifler"
+    label: "Tarifler"
+    files:
+      - name: "tarifler"
+        label: "Tarif Listesi"
+        file: "data/tarifler.json"
+        fields:
+          - name: "items"
+            label: "Tarifler"
+            widget: "list"
+            summary: "{{fields.baslik}}"
+            fields:
+              - { name: "baslik", label: "Başlık", widget: "string" }
+              - { name: "aciklama", label: "Açıklama", widget: "string" }
+              - { name: "sure", label: "Süre (örn. 1:00)", widget: "string", default: "1:00" }
+              - { name: "emoji", label: "Emoji", widget: "string", default: "🥗" }
+
+  - name: "lifehack"
+    label: "Life Hack"
+    files:
+      - name: "lifehack"
+        label: "Life Hack Listesi"
+        file: "data/lifehack.json"
+        fields:
+          - name: "items"
+            label: "Life Hack'ler"
+            widget: "list"
+            summary: "{{fields.baslik}}"
+            fields:
+              - { name: "baslik", label: "Başlık", widget: "string" }
+              - { name: "aciklama", label: "Açıklama", widget: "text" }
+              - { name: "sure", label: "Süre (örn. 0:35)", widget: "string", default: "0:35" }
+              - { name: "emoji", label: "Emoji", widget: "string", default: "📚" }
+
+  - name: "site"
+    label: "Site Bilgileri"
+    files:
+      - name: "site"
+        label: "İletişim & Sosyal Medya"
+        file: "data/site.json"
+        fields:
+          - { name: "whatsapp_no", label: "WhatsApp Numarası (ülke kodlu, örn. 905551112233)", widget: "string" }
+          - { name: "email", label: "E-posta Adresi", widget: "string" }
+          - { name: "instagram_url", label: "Instagram Linki", widget: "string" }
+          - { name: "youtube_url", label: "YouTube Linki", widget: "string" }
+          - { name: "tiktok_url", label: "TikTok Linki", widget: "string" }
