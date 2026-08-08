@@ -2,8 +2,6 @@ backend:
   name: github
   repo: umutalemdar27-droid/fit-lezzet-site
   branch: main
-  auth_type: pkce
-  app_id: Ov23licJQppH2pt71qr9
 
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
